@@ -1,0 +1,80 @@
+{
+  "kind": "build_request",
+  "title": "Fix continuous UI flicker caused by silent React Query refetch/state loop (logged-in)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Stop the continuous UI blinking/lag by eliminating any silent React Query invalidation/refetch loop that happens while authenticated (Internet Identity). Ensure that actor/identity initialization does not repeatedly invalidate and refetch all non-actor queries on an ongoing basis.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-6",
+          "msg-9"
+        ],
+        "quotes": [
+          "nå ser jeg porteföljen og alt er der, men siden blinker/lagger. virker som den blinker mellom default priser og pröver å oppdatere riser uten at den klarer det...",
+          "det skjer heletiden.",
+          "fiks blinkingen"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When logged in via Internet Identity, the dashboard no longer continuously flickers between default/fallback values and live values.",
+        "React Query Devtools/logs (or console logs already present in hooks) do not show repeated invalidation/refetch cycles happening continuously without user action.",
+        "Queries refetch only at their intended cadence (e.g., prices/FX at configured intervals) and not in a tight loop triggered by actor/identity changes."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Make the portfolio rendering stable during background updates: while live prices and FX rates are refetching, keep displaying the last known successful portfolio computation instead of swapping back to fallback/default values mid-session.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "virker som den blinker mellom default priser og pröver å oppdatere riser uten at den klarer det...",
+          "Jeg bygger en konkret løsning som stopper den kontinuerlige refetch-/state-loopen ..."
+        ]
+      },
+      "acceptanceCriteria": [
+        "During any background refetch of prices and/or exchange rate, the totals and asset rows do not visibly alternate between two different states (no oscillation).",
+        "If a live fetch fails, the UI continues to show the last known successful live/cached values (or a single consistent fallback), rather than rapidly switching back and forth.",
+        "The UI still updates to new live values when a subsequent fetch succeeds, without causing visible flicker."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add lightweight diagnostics to verify the fix: log (or otherwise surface) a single, clearly identifiable reason whenever portfolio-related queries are invalidated/refetched due to authentication/actor changes, and ensure this does not spam continuously in normal operation.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6",
+          "msg-9"
+        ],
+        "quotes": [
+          "Dette peker veldig tydelig på en stille refetch-/state-loop i frontend",
+          "Stoppe uendelige refetch-loops (stabile query keys + riktig `enabled`/`staleTime`)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After page load, diagnostics indicate at most one portfolio-query invalidation/refetch caused by the actor becoming ready (not repeated continuously).",
+        "No new user-facing error banners are introduced as part of the diagnostics."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit files under frontend/src/components/ui (compose existing UI components instead).",
+    "Do not modify immutable frontend hook paths listed in SYSTEM_CONTEXT."
+  ],
+  "nonGoals": [
+    "Do not add new portfolio features or change portfolio calculations beyond what is necessary to remove flicker.",
+    "Do not change backend logic or schemas unless the flicker cannot be fixed purely in the frontend."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

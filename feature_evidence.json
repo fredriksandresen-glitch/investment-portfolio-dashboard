@@ -1,0 +1,70 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-stop-the-continuous-ui-blinking-lag-by-eliminating-any-silent-react-query-invalidation-refetch-loop-that-happens-while-authenticated-internet-identity-ensure-that-actor-identity-initialization-does-not-repeatedly-invalidate-and-refetch-all-non-actor-queries-on-an-ongoing-basis",
+      "featureTitle": "Stop the continuous UI blinking/lag by eliminating any silent React Query invalidation/refetch loop that happens while authenticated (Internet Identity). Ensure that actor/identity initialization does not repeatedly invalidate and refetch all non-actor queries on an ongoing basis.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useSafeActor.ts"
+      ],
+      "components": [
+        "authorization@1.0.1",
+        "blob-storage@2.0.3",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@1.1.1",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-make-the-portfolio-rendering-stable-during-background-updates-while-live-prices-and-fx-rates-are-refetching-keep-displaying-the-last-known-successful-portfolio-computation-instead-of-swapping-back-to-fallback-default-values-mid-session",
+      "featureTitle": "Make the portfolio rendering stable during background updates: while live prices and FX rates are refetching, keep displaying the last known successful portfolio computation instead of swapping back to fallback/default values mid-session.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@1.0.1",
+        "blob-storage@2.0.3",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@1.1.1",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-lightweight-diagnostics-to-verify-the-fix-log-or-otherwise-surface-a-single-clearly-identifiable-reason-whenever-portfolio-related-queries-are-invalidated-refetched-due-to-authentication-actor-changes-and-ensure-this-does-not-spam-continuously-in-normal-operation",
+      "featureTitle": "Add lightweight diagnostics to verify the fix: log (or otherwise surface) a single, clearly identifiable reason whenever portfolio-related queries are invalidated/refetched due to authentication/actor changes, and ensure this does not spam continuously in normal operation.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/lib/queryDiagnostics.ts"
+      ],
+      "components": [
+        "authorization@1.0.1",
+        "blob-storage@2.0.3",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "http-outcalls@1.1.1",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

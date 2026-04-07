@@ -1,0 +1,74 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Eliminate authenticated React Query refetch loop and stabilize portfolio rendering",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Stop continuous UI flicker by removing the silent actor/identity-driven React Query invalidation/refetch loop while authenticated.",
+      "acceptanceCriteria": [
+        "When logged in via Internet Identity, the dashboard no longer continuously flickers between default/fallback values and live values.",
+        "React Query Devtools/logs (or console logs already present in hooks) do not show repeated invalidation/refetch cycles happening continuously without user action.",
+        "Queries refetch only at their intended cadence (e.g., prices/FX at configured intervals) and not in a tight loop triggered by actor/identity changes."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Remove the broad invalidateQueries + refetchQueries-on-every-actor-change effect that currently targets all non-actor queries. Replace it with a narrowly-scoped, identity-transition-aware strategy (e.g., invalidate only portfolio-related queries once when the authenticated principal changes, and do not force immediate refetch). Ensure actor/identity initialization does not continuously trigger global query refresh."
+        },
+        {
+          "path": "frontend/src/hooks/useSafeActor.ts",
+          "operation": "modify",
+          "description": "Prevent duplicate/competing access-control initialization side effects across hooks. Ensure access-control initialization (if still needed) happens in one place and does not trigger cascaded query invalidations/refetches (e.g., gate with a one-time-per-actor guard and avoid repeated initialization attempts on stable actor instances)."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Align actor-dependent queries with actor readiness without causing refetch loops: tighten `enabled` conditions for authenticated data so queries do not run (or reset) while actor/auth is transitioning, and ensure query keys are stable and do not change due to non-primitive identity/actor objects."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Keep portfolio UI stable during background price/FX refetches by retaining the last successful computed portfolio state instead of reverting to fallback/default mid-session.",
+      "acceptanceCriteria": [
+        "During any background refetch of prices and/or exchange rate, the totals and asset rows do not visibly alternate between two different states (no oscillation).",
+        "If a live fetch fails, the UI continues to show the last known successful live/cached values (or a single consistent fallback), rather than rapidly switching back and forth.",
+        "The UI still updates to new live values when a subsequent fetch succeeds, without causing visible flicker."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Adjust portfolio-related query behavior to retain last successful data during background refetches and transient failures: (1) for live prices and FX queries, avoid overwriting cached successful data with fallback/empty data on fetch errors (prefer keeping previous cache); (2) for derived portfolio computation, key recomputation off stable update markers (e.g., dataUpdatedAt timestamps) and keep the previous computed result while dependencies are refetching; (3) ensure initial fallback is used only for first render and not reintroduced once real data has been successfully computed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add lightweight, non-spammy diagnostics that attribute any portfolio-related invalidation/refetch to authentication/actor readiness changes.",
+      "acceptanceCriteria": [
+        "After page load, diagnostics indicate at most one portfolio-query invalidation/refetch caused by the actor becoming ready (not repeated continuously).",
+        "No new user-facing error banners are introduced as part of the diagnostics."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/queryDiagnostics.ts",
+          "operation": "create",
+          "description": "Create a tiny diagnostics helper to emit clearly identifiable, de-duplicated console logs for React Query invalidation/refetch triggers (e.g., a function that logs a reason string once per identity/principal change and/or with simple time-based throttling)."
+        },
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Integrate the diagnostics helper to log a single, clearly labeled reason when any portfolio-related query invalidation is performed due to identity/actor becoming ready or changing. Ensure logs are de-duplicated and do not spam during normal operation."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Use the diagnostics helper to annotate any deliberate portfolio-related invalidation/refetch decisions that are tied to authentication/actor readiness (if any remain after REQ-1 changes), ensuring attribution is clear and not continuous."
+        }
+      ]
+    }
+  ]
+}

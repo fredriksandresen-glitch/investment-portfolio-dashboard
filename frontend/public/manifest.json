@@ -1,0 +1,20 @@
+{
+  "name": "Investment Portfolio Dashboard",
+  "short_name": "Portfolio",
+  "description": "Profesjonell investeringsportefølje dashboard med sanntidssporing og analyser",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/generated/pwa-app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "lang": "no"
+}

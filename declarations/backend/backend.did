@@ -1,0 +1,141 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type YieldProjection = 
+ record {
+   annualYieldIcp: float64;
+   annualYieldNok: float64;
+   annualYieldUsd: float64;
+   icpPrice: float64;
+   monthlyYieldIcp: float64;
+   monthlyYieldNok: float64;
+   monthlyYieldUsd: float64;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Time = int;
+type PortfolioSummary = 
+ record {
+   assetCount: nat;
+   totalChange24h: float64;
+   totalValue: float64;
+   weightedChange24h: float64;
+ };
+type PortfolioReturn = 
+ record {
+   annualReturn: float64;
+   endDate: text;
+   endValue: float64;
+   startDate: text;
+   startValue: float64;
+   totalReturn: float64;
+ };
+type HistoricalDataPoint = 
+ record {
+   date: text;
+   value: float64;
+ };
+type ExchangeRate = 
+ record {
+   message: text;
+   rate: float64;
+   source: text;
+   status: text;
+   timestamp: Time;
+ };
+type Asset = 
+ record {
+   annualYield: float64;
+   apiStatus: text;
+   customPrice: opt float64;
+   id: text;
+   isStaked: bool;
+   name: text;
+   price: float64;
+   priceChange24h: float64;
+   quantity: float64;
+   stakedAmount: float64;
+   "type": text;
+ };
+type ApiStatus = 
+ record {
+   message: text;
+   status: text;
+   timestamp: Time;
+ };
+service : {
+  addHistoricalDataPoint: (date: text, value: float64) -> ();
+  addMonthlyDataPoint: (date: text, value: float64) -> ();
+  cachePriceData: (asset: text, data: text) -> ();
+  calculatePortfolioReturn: () -> (PortfolioReturn) query;
+  calculatePortfolioSummary: () -> (PortfolioSummary) query;
+  calculateStakedYield: () -> (float64);
+  calculateTotalPortfolioValue: () -> (float64);
+  calculateYieldProjection: () -> (YieldProjection) query;
+  deleteHistoricalDataPoint: (date: text) -> ();
+  deleteMonthlyDataPoint: (date: text) -> ();
+  fetchCryptoPrices: () -> (text);
+  fetchExchangeRates: () -> (text);
+  fetchStockPrices: () -> (text);
+  getApiStatus: () -> (vec record {
+                             text;
+                             ApiStatus;
+                           }) query;
+  getAssetCount: () -> (text) query;
+  getAssets: () -> (vec record {
+                          text;
+                          Asset;
+                        }) query;
+  getCachedPrices: () -> (vec record {
+                                text;
+                                text;
+                              }) query;
+  getExchangeRate: () -> (ExchangeRate) query;
+  getHistoricalData: () -> (vec record {
+                                  text;
+                                  HistoricalDataPoint;
+                                }) query;
+  getIcpPriceSlider: () -> (float64) query;
+  getLastUpdateTime: () -> (text) query;
+  getPriceCacheSize: () -> (text) query;
+  getUserPreferences: () -> (vec record {
+                                   text;
+                                   text;
+                                 }) query;
+  getUserPreferencesCount: () -> (text) query;
+  resetHistoricalData: () -> ();
+  resetMonthlyData: () -> ();
+  resetToDefault: () -> ();
+  setIcpPriceSlider: (price: float64) -> ();
+  setUserPreference: (key: text, value: text) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateAllPrices: () -> ();
+  updateApiStatus: (assetId: text, status: text, message: text) -> ();
+  updateAssetPrice: (assetId: text, price: float64, priceChange24h: float64,
+   status: text) -> ();
+  updateAssetQuantity: (assetId: text, quantity: float64) -> (bool);
+  updateCustomPrice: (assetId: text, price: float64) -> (bool);
+  updateExchangeRate: () -> ();
+  updateHistoricalDataPoint: (date: text, value: float64) -> ();
+  updateHistoricalWithCurrentTotal: (date: text) -> ();
+  updateLastFetchTime: () -> ();
+  updateMonthlyDataPoint: (date: text, value: float64) -> ();
+  verifyAndCorrectTotalValue: () -> ();
+}

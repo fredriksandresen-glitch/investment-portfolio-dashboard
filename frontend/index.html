@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="no">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="description" content="Profesjonell investeringsportefølje dashboard med sanntidssporing og analyser" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Portfolio" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" type="image/png" href="/assets/generated/pwa-app-icon.png" />
+        <link rel="apple-touch-icon" href="/assets/generated/pwa-app-icon.png" />
+        <title>Investment Portfolio Dashboard</title>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                background-color: #ffffff;
+                color: #0f172a;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                html, body {
+                    background-color: #0f172a;
+                    color: #f8fafc;
+                }
+            }
+            
+            #root {
+                min-height: 100vh;
+                background-color: inherit;
+                color: inherit;
+            }
+            
+            .loading-spinner {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e2e8f0;
+                border-top: 4px solid #3b82f6;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                z-index: 9999;
+            }
+            
+            @keyframes spin {
+                0% { transform: translate(-50%, -50%) rotate(0deg); }
+                100% { transform: translate(-50%, -50%) rotate(360deg); }
+            }
+            
+            .loading-text {
+                position: fixed;
+                top: 60%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 14px;
+                color: #64748b;
+                z-index: 9999;
+            }
+
+            .startup-error {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 500px;
+                width: 90%;
+                padding: 24px;
+                background: #fee;
+                border: 2px solid #c33;
+                border-radius: 8px;
+                color: #600;
+                z-index: 10000;
+            }
+
+            .startup-error h2 {
+                margin: 0 0 12px 0;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .startup-error p {
+                margin: 0 0 16px 0;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .startup-error button {
+                padding: 8px 16px;
+                background: #c33;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .startup-error button:hover {
+                background: #a22;
+            }
+
+            .startup-error pre {
+                margin: 12px 0 0 0;
+                padding: 12px;
+                background: #fdd;
+                border-radius: 4px;
+                font-size: 11px;
+                overflow: auto;
+                max-height: 200px;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .loading-spinner {
+                    border: 4px solid #334155;
+                    border-top: 4px solid #60a5fa;
+                }
+                
+                .loading-text {
+                    color: #94a3b8;
+                }
+
+                .startup-error {
+                    background: #3a1a1a;
+                    border-color: #c33;
+                    color: #fcc;
+                }
+
+                .startup-error pre {
+                    background: #2a0a0a;
+                    color: #fcc;
+                }
+            }
+        </style>
+        <script>
+            // Pre-React startup error handler
+            window.addEventListener('error', function(event) {
+                console.error('[Startup] Global error:', event.error || event.message);
+                showStartupError(event.error || new Error(event.message));
+            });
+
+            window.addEventListener('unhandledrejection', function(event) {
+                console.error('[Startup] Unhandled rejection:', event.reason);
+                showStartupError(event.reason);
+            });
+
+            function showStartupError(error) {
+                var root = document.getElementById('root');
+                if (!root) return;
+
+                var message = error?.message || error?.toString() || 'Unknown startup error';
+                var stack = error?.stack || 'No stack trace available';
+
+                root.innerHTML = 
+                    '<div class="startup-error">' +
+                    '<h2>⚠️ Startup Error</h2>' +
+                    '<p>The application failed to start. Please reload the page.</p>' +
+                    '<p><strong>Error:</strong> ' + escapeHtml(message) + '</p>' +
+                    '<button onclick="window.location.reload()">Reload Application</button>' +
+                    '<details style="margin-top: 16px;">' +
+                    '<summary style="cursor: pointer; font-size: 12px;">Show technical details</summary>' +
+                    '<pre>' + escapeHtml(stack) + '</pre>' +
+                    '</details>' +
+                    '</div>';
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        </script>
+    </head>
+    <body>
+        <div id="root">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Investment Dashboard...</div>
+        </div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
+</html>

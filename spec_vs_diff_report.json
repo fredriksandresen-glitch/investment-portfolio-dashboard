@@ -1,0 +1,59 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-03T17:22:00.303Z",
+  "summary": "Diff adds a throttled console-based query diagnostics helper and introduces a `useSafeActor` wrapper to avoid repeated actor initialization. `useQueries.ts` is modified and now imports the diagnostics helper, but the truncated diff does not clearly show the specific React Query invalidation/refetch-loop fix nor the “stable last successful portfolio render” behavior, so those requirements cannot be fully verified from the provided evidence.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Stop continuous UI blinking/lag by eliminating any silent React Query invalidation/refetch loop while authenticated; ensure actor/identity initialization does not repeatedly invalidate/refetch non-actor queries.",
+      "reason": "Although `useSafeActor` reduces repeated actor initialization and `useQueries.ts` was modified, the truncated `useQueries.ts` diff does not show the concrete change that prevents a React Query invalidation/refetch loop tied to actor/identity changes (e.g., removal/guarding of invalidations, stable actor in query keys, or controlled invalidation on actor-ready).",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts (truncated)",
+        "frontend/src/hooks/useSafeActor.ts"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Make portfolio rendering stable during background updates by keeping the last known successful portfolio computation during refetch/failures (no oscillation to fallback).",
+      "reason": "The diff summary text for `useQueries.ts` (in `frontend-file-summaries.txt`) claims use of placeholderData/previous values, but the actual `useQueries.ts` code changes are truncated and do not provide direct evidence that last-successful data is retained during background refetch and errors (e.g., `placeholderData: keepPreviousData`, `staleTime`, `retry`, or logic that avoids reverting to DEFAULT_* mid-session).",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts (truncated)",
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Add lightweight diagnostics to log a single clearly identifiable reason when portfolio-related queries are invalidated/refetched due to auth/actor changes, without continuous spam.",
+      "reason": "A throttled logger is added, and `useQueries.ts` imports it, but the truncated diff does not show where portfolio-related invalidation/refetch events are actually logged with a clear actor/auth-related reason, nor that the log triggers at most once when the actor becomes ready.",
+      "evidence": [
+        "frontend/src/lib/queryDiagnostics.ts",
+        "frontend/src/hooks/useQueries.ts (truncated)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added extra diagnostics utilities (clearing diagnostics and returning a summary) beyond the requested lightweight single-reason logging for actor/auth-triggered invalidation/refetch verification.",
+      "reason": "REQ-3 requests lightweight diagnostics/logging to attribute invalidation/refetch to actor/auth changes without spamming; `clearDiagnostics` and `getDiagnosticsSummary` are additional capabilities not explicitly requested.",
+      "evidence": [
+        "frontend/src/lib/queryDiagnostics.ts"
+      ]
+    },
+    {
+      "description": "Introduced console logging around access control initialization in `useSafeActor` (e.g., 'Initializing access control for new actor instance...').",
+      "reason": "REQ-3 is specifically about diagnostics for portfolio-related query invalidation/refetch due to authentication/actor changes, not about access-control initialization logging. This may be useful but is not explicitly requested by the BuildRequest.",
+      "evidence": [
+        "frontend/src/hooks/useSafeActor.ts"
+      ]
+    }
+  ],
+  "confidence": 0.56,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/hooks/useSafeActor.ts",
+    "frontend/src/lib/queryDiagnostics.ts",
+    "project_state.json"
+  ]
+}

@@ -1,0 +1,420 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 26,
+  "summary": "Investment Portfolio Dashboard is a React + TypeScript PWA for tracking a personal investment portfolio (crypto + stocks) with live price fetching, live USD→NOK conversion, allocation visualizations, editing holdings (quantity and custom price overrides) for what-if analysis, and analytics including a portfolio performance time-series graph with automatic daily snapshots at 18:00 Norway time (CET/CEST). The app integrates with an ICP Motoko canister backend for persistence/auth (Internet Identity) and uses third‑party APIs for market/FX data with caching and default fallbacks; recent iterations include per-asset fetch status indicators, API-provider split (CoinGecko for crypto; Finnhub for stocks via API key), and a mobile PWA install UX.",
+  "existing_features": [
+    {
+      "id": "IF-1",
+      "title": "Portfolio dashboard aggregation (totals, allocation, conversions)",
+      "synonyms": [
+        "Portfolio summary",
+        "Derived portfolio state"
+      ],
+      "description": "Builds a unified PortfolioData object by combining persisted assets with live market prices and USD→NOK exchange rate, computing total value (USD/NOK), per-asset value, and allocation percentages with robust fallbacks to defaults.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-2",
+      "title": "Live crypto and stock price fetching with fallback and caching",
+      "synonyms": [
+        "Market price service",
+        "Price API integration"
+      ],
+      "description": "Fetches crypto prices from CoinGecko and stock quotes from Finnhub, rate-limits stock calls, caches last known successful results in memory, and returns per-symbol PriceData including status and user-facing messages when falling back.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-3",
+      "title": "USD/NOK exchange rate fetching with cached and default fallback",
+      "synonyms": [
+        "FX rate",
+        "Currency conversion feed"
+      ],
+      "description": "Fetches USD base rates from ExchangeRate-API, caches successful rates for offline fallback, and exposes rate metadata (source/status/message/timestamp) to the UI.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-4",
+      "title": "Immediate default portfolio rendering (offline-first UX)",
+      "synonyms": [
+        "Hardcoded defaults",
+        "No white-screen fallback"
+      ],
+      "description": "Provides hardcoded default assets, default historical data, and default exchange rate via React Query initialData and try/catch fallbacks so the dashboard renders instantly even without backend actor or API availability.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-5",
+      "title": "Asset holdings view with filtering and allocation pie chart",
+      "synonyms": [
+        "Holdings list",
+        "Allocation chart"
+      ],
+      "description": "Renders a filtered list of assets (all/crypto/stocks), displays value and 24h change badges, and visualizes portfolio allocation using a Recharts pie chart.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-6",
+      "title": "In-app portfolio editing (quantity and custom price override)",
+      "synonyms": [
+        "Edit holdings",
+        "Custom pricing"
+      ],
+      "description": "Provides a modal editor for asset quantity and optional custom USD price override, persists updates to the backend via mutations, and invalidates/refetches relevant queries to reflect changes across the dashboard.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-7",
+      "title": "Reset portfolio to default values",
+      "synonyms": [
+        "Factory reset",
+        "Restore defaults"
+      ],
+      "description": "Calls a backend reset method to restore the default asset set for the authenticated user and triggers full query invalidation/refetch; also clears the frontend historical-data in-memory cache.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-8",
+      "title": "Historical portfolio value tracking with daily synchronization",
+      "synonyms": [
+        "Portfolio history",
+        "Performance over time"
+      ],
+      "description": "Fetches historical portfolio data from the backend, normalizes/sorts points, ensures a data point for today matches the current computed NOK total, and attempts to persist updates back to the backend; includes a cache-based safeguard against apparent backend data loss.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-9",
+      "title": "Historical portfolio graph with fullscreen mode",
+      "synonyms": [
+        "Performance chart",
+        "Fullscreen chart"
+      ],
+      "description": "Displays historical portfolio value in NOK as a Recharts line chart with custom axis/tooltip formatting and a fullscreen dialog for detailed viewing.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-10",
+      "title": "Synthetic 30-day asset price history and performance chart",
+      "synonyms": [
+        "Demo historical prices",
+        "30-day chart"
+      ],
+      "description": "Generates deterministic synthetic 30-day historical price series per symbol and visualizes selected assets (BTC/ICP/SPX) in a multi-line chart; includes a tabular performance summary UI.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Scenario analysis projections with adjustable growth rates",
+      "synonyms": [
+        "What-if analysis",
+        "Portfolio projections"
+      ],
+      "description": "Allows users to adjust annual growth rate assumptions for base/bull/bear scenarios and computes projected portfolio values across multiple time horizons, including per-asset 12-month projections.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "ICP staking monthly yield and compounding projections",
+      "synonyms": [
+        "Yield tracker",
+        "Staking calculator"
+      ],
+      "description": "Calculates ICP staking yield using staked/unstaked split, APY, and a user-adjustable ICP price slider; projects monthly compounded yields for 12 months and shows USD/NOK conversions using the current exchange rate from the portfolio state.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Risk metrics dashboard (mock analytics)",
+      "synonyms": [
+        "Risk analysis",
+        "Volatility dashboard"
+      ],
+      "description": "Displays mocked portfolio risk indicators (volatility, Sharpe, drawdown, beta, VaR), a radar chart of risk factors, and an asset risk contribution table with formatted/typed numeric helpers.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Market news section with sentiment and asset tabs (mock)",
+      "synonyms": [
+        "News feed",
+        "Sentiment summary"
+      ],
+      "description": "Provides a tabbed news UI filtered by asset symbol with sentiment badges and a sentiment summary breakdown; currently driven by mock news items.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Theme toggle and responsive UI system",
+      "synonyms": [
+        "Dark mode",
+        "Design system"
+      ],
+      "description": "Implements dark/light mode toggling via next-themes, styling via TailwindCSS with an HSL token system, and shared UI primitives (cards, tables, dialogs, tooltips, alerts).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-16",
+      "title": "API health/status indicators in the UI",
+      "synonyms": [
+        "Live/partial/offline badge",
+        "Price source indicator"
+      ],
+      "description": "Shows a header-level badge (Live/Partial Live/Offline/Loading) based on live price and exchange-rate availability and per-asset status indicators (success/custom/fallback) with tooltips explaining the current source.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-17",
+      "title": "PWA support (manifest, service worker, install UX)",
+      "synonyms": [
+        "Offline-capable app",
+        "Home screen install"
+      ],
+      "description": "Includes a PWA manifest and a simple service worker caching strategy, plus a mobile-only install button that uses the native install prompt when available or shows manual iOS/Android installation instructions.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Internet Identity authentication and backend actor management",
+      "synonyms": [
+        "II login",
+        "Authenticated canister calls"
+      ],
+      "description": "Provides an InternetIdentityProvider for login/logout and identity persistence; creates an authenticated or anonymous canister actor accordingly and initializes backend access control on actor creation, invalidating/refetching queries when identity changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-19",
+      "title": "Backend access control (admin/user/guest roles)",
+      "synonyms": [
+        "RBAC",
+        "Role assignment"
+      ],
+      "description": "Implements role-based permissions in Motoko where the first initializer becomes admin, subsequent principals become users, and anonymous callers are guests; guards portfolio/profile mutation and admin-only endpoints accordingly.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-20",
+      "title": "Backend per-user portfolio persistence and mutations",
+      "synonyms": [
+        "Canister portfolio storage",
+        "Portfolio CRUD"
+      ],
+      "description": "Stores per-principal portfolios and profiles using OrderedMap; supports reading the caller’s portfolio, updating asset quantity, setting/clearing custom prices, appending historical data points, and resetting to defaults (authenticated users only).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-21",
+      "title": "Backend public read-only endpoints for shared/default data",
+      "synonyms": [
+        "Public queries",
+        "Guest-readable data"
+      ],
+      "description": "Exposes public query methods for shared historical data, default assets, exchange rate/status, API status, last update time, and health checks to support fast loading and guest access (read-only).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-22",
+      "title": "Backend HTTP outcall utility module and admin fetch endpoints",
+      "synonyms": [
+        "IC HTTP requests",
+        "External API outcalls"
+      ],
+      "description": "Provides a reusable Motoko HTTP outcall module (GET/POST with transform) and admin-only endpoints that can request CoinGecko/Finnhub/ExchangeRate-API data (currently returning raw responses).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-23",
+      "title": "Blob storage mixin and authorization utilities (Caffeine storage tooling)",
+      "synonyms": [
+        "Storage gateway auth",
+        "Cycles refill utilities"
+      ],
+      "description": "Includes a storage subsystem and mixin supporting authorized gateway principal updates, dead-blob listing/confirmation, certificate creation, and a cashier cycles refill flow guarded by authorization checks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-24",
+      "title": "Automatic daily portfolio-history append at 18:00 Norway time (CET/CEST)",
+      "synonyms": [
+        "Scheduled daily history point",
+        "18:00 CET/CEST history sync"
+      ],
+      "description": "Adds a client-side scheduler (hook) that automatically appends a new portfolio-history data point once per day at 18:00 Norway time (CET/CEST), updating the historical graph accordingly and avoiding reliance on manual refreshes.",
+      "reqIds": [
+        "AR-1",
+        "AR-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-25",
+      "title": "Root-level failsafe rendering (ErrorBoundary + SafeAppShell + global error UI)",
+      "synonyms": [
+        "White-screen prevention",
+        "Fatal error screen",
+        "Global error banner"
+      ],
+      "description": "Adds a root-level React ErrorBoundary and a defensive SafeAppShell render path so the app always mounts and shows a usable default UI (or a fatal error screen/banner) even when auth/actor/data hydration fails; includes global error capture hooks/components to surface and recover from initialization/runtime errors instead of rendering a blank page.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-stop-the-continuous-ui-blinking-lag-by-eliminating-any-silent-react-query-invalidation-refetch-loop-that-happens-while-authenticated-internet-identity-ensure-that-actor-identity-initialization-does-not-repeatedly-invalidate-and-refetch-all-non-actor-queries-on-an-ongoing-basis",
+      "title": "Stop the continuous UI blinking/lag by eliminating any silent React Query invalidation/refetch loop that happens while authenticated (Internet Identity). Ensure that actor/identity initialization does not repeatedly invalidate and refetch all non-actor queries on an ongoing basis.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-portfolio-rendering-stable-during-background-updates-while-live-prices-and-fx-rates-are-refetching-keep-displaying-the-last-known-successful-portfolio-computation-instead-of-swapping-back-to-fallback-default-values-mid-session",
+      "title": "Make the portfolio rendering stable during background updates: while live prices and FX rates are refetching, keep displaying the last known successful portfolio computation instead of swapping back to fallback/default values mid-session.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-lightweight-diagnostics-to-verify-the-fix-log-or-otherwise-surface-a-single-clearly-identifiable-reason-whenever-portfolio-related-queries-are-invalidated-refetched-due-to-authentication-actor-changes-and-ensure-this-does-not-spam-continuously-in-normal-operation",
+      "title": "Add lightweight diagnostics to verify the fix: log (or otherwise surface) a single, clearly identifiable reason whenever portfolio-related queries are invalidated/refetched due to authentication/actor changes, and ensure this does not spam continuously in normal operation.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-2",
+      "summary": "Allow editing all asset values (quantities/prices/etc.) and persist/save the changes so they remain after refresh/reload",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Allow editing asset quantities and prices for what-if valuation and save/persist those edits (no editing of historical graph points; intended for single-user personal use)",
+      "reqIds": [
+        "AR-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add fullscreen/expandable mode for the historical portfolio performance graph (click to open in a large/fullscreen frame) while keeping UI structure otherwise unchanged",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add a mobile-only PWA install/download button at the bottom of the page to help users add the app icon to their home screen (native install prompt when available, otherwise instructions)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Update default ICP holding breakdown to 8,500 staked and 7,000 liquid (and include both correctly in yield calculations)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Compute and display portfolio-level 24h change as a weighted aggregate of the assets’ 24h % changes (not a simple or incorrect global %), with correct up/down indicators",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Fetch and use live USD/NOK exchange rate in all NOK portfolio calculations (totals, per-asset NOK values, and performance graph), with fallback to last-known/default on failure",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Persist and append portfolio performance graph points automatically each day at 18:00 Norway time (CET/CEST) without duplicates, ensuring the graph’s last point equals the current summed total",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Use CoinGecko exclusively for crypto live prices/% changes (ICP, BTC, SPX6900) and Finnhub exclusively for stock prices/% changes (BMNR, MSTR, SBET) with per-asset success/failure indicators and fallbacks",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Fix continuous UI flicker/blinking/lag caused by a silent refetch/state loop (likely React Query invalidation/refetch toggling between fallback and live prices), especially when logged in; ensure live data replaces fallback without oscillation",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "architecturalNotes": [
+    "Frontend uses TanStack React Query for all data fetching/mutations with configured staleTime/gcTime/refetchInterval and extensive initialData-based fallbacks to prevent blank screens.",
+    "Data aggregation pattern: usePortfolio builds derived portfolio state by merging backend assets + client-side live prices + exchange rate, then computes totals and allocations.",
+    "Price and FX fetching is implemented client-side in a dedicated priceService module with in-memory caching (cachedPrices/cachedExchangeRate) and per-asset status messaging (success/fallback/custom).",
+    "Authentication uses Internet Identity via @dfinity/auth-client; identity changes trigger actor recreation and invalidate/refetch of dependent React Query caches (useActor).",
+    "Backend is an ICP Motoko canister (actor InvestmentDashboard) using OrderedMap for persistent maps and a role-based access control module (admin/user/guest).",
+    "Backend distinguishes public read-only query endpoints (e.g., shared historical data, default assets, health check) from authenticated shared/update functions for integrity.",
+    "Historical portfolio chart uses Recharts and keeps an in-memory historicalDataCache to protect against unexpected backend data loss and to ensure 'today' matches the current computed total.",
+    "UI architecture is component-based using TailwindCSS + shadcn-style UI components, lucide icons, and next-themes for dark/light mode; charts use Recharts.",
+    "PWA support includes manifest.json, a basic service worker cache strategy, and a mobile-only install UX with manual instructions for iOS/Android.",
+    "Backend includes reusable modules for HTTP outcalls (with response transform) and a blob-storage mixin with authorization and cycles refill mechanisms (Caffeine storage tooling).",
+    "User requirement refinement: daily portfolio-history point should be added automatically at 18:00 Norway time (CET/CEST), not just 'once per day'.",
+    "User requirement refinement: edits are for asset quantities and prices only (what-if targets); historical performance points should not be user-editable.",
+    "User requirement refinement: persistence does not need multi-user semantics; intended for personal single-user usage (still may use existing auth/backend unless changed explicitly later).",
+    "Historical tracking now includes a dedicated client-side scheduler (useDailyHistoryAppend) to append a portfolio-history point at 18:00 Norway time (CET/CEST).",
+    "React Query provider setup was consolidated to avoid multiple QueryClientProvider instances and split caches.",
+    "Frontend configuration/API keys were moved toward centralized config/env-driven values instead of hardcoding secrets in source.",
+    "Stock live pricing provider switched/confirmed to Finnhub API (requires API token) while crypto pricing uses CoinGecko; UI shows per-asset fetch success/fallback status indicators with tooltips.",
+    "Historical performance graph uses Plotly with a true datetime x-axis for proportional spacing between dates; last point should be forced to equal the current summed portfolio total to avoid mismatch.",
+    "PWA UX includes a mobile-only install button to prompt Add-to-Home-Screen / install flow.",
+    "Planned fix for draft/preview white-screen regression: add a root-level ErrorBoundary/failsafe render path and defensive guards so default portfolio UI renders before any async auth/actor/data hydration; harden init flow around auth/canister calls and history parsing to prevent blank screens in draft.",
+    "App initialization is hardened with a root-level RootErrorBoundary + SafeAppShell pattern, plus global error capture/banner components, to prevent draft/preview blank-screen regressions when auth/actor/data hydration or history parsing fails.",
+    "A safer actor-access layer (useSafeActor) is introduced to guard canister calls during identity/actor transitions and route failures into global error state instead of breaking initial render.",
+    "Introduced a dedicated reactQueryKey helper/utility to ensure TanStack React Query queryKeys never contain BigInt/Principal/Nat values directly; all such values are normalized (e.g., to string) before inclusion in query keys/options.",
+    "Added custom ESLint rules in the build template (e.g., no-bigint-in-query-keys, require-internet-identity-provider) to prevent regressions around BigInt queryKey hashing and missing Internet Identity provider wiring."
+  ],
+  "knownIssues": [
+    "Backend defaultHistoricalData uses date strings like \"23/01/2024\" while the frontend parser in useHistoricalPortfolioData expects \"yyyy-MM-dd\"; if backend data is used as-is, date parsing can produce Invalid Date/NaN timestamps and break sorting/graphing.",
+    "useHistoricalData generates synthetic 30-day price history (sine-based) rather than fetching real historical market data; performance charts are therefore demo/mock rather than accurate.",
+    "Backend admin HTTP outcall functions (fetchCryptoPrices/fetchStockPrices/fetchExchangeRates/updateAllPrices) return raw API responses and do not parse/apply results to update stored asset prices, priceCache, apiStatus, or exchangeRate automatically; backend caching fields appear largely unused by the frontend.",
+    "Backend historical data appends new points without deduplication or bounds; repeated daily updates can grow unbounded over time and may contain duplicates for the same date.",
+    "Backend portfolio mutation endpoints do not validate negative quantities/prices; frontend prevents negatives in UI, but backend accepts arbitrary floats if called directly.",
+    "Guest users calling getCallerPortfolio will trap due to access control; the frontend catches and falls back to defaults, but this will generate console errors/noise.",
+    "Potential field-name mismatch risk: backend defines Asset.type_ while frontend code expects asset.type (depends on generated bindings); if not mapped, asset filtering/type display can break for authenticated portfolios.",
+    "Draft/build sometimes renders as a blank white screen or gets stuck loading portfolio values (rendering failure despite fallbacks), indicating a regression in initial data loading/render guards that must be fixed.",
+    "Draft/preview still renders as a completely white page (no content) even after refresh and with no visible console errors; likely an init/render regression before React mounts. Needs a root-level failsafe (ErrorBoundary + default render guards) and hardened auth/actor/data hydration to prevent blank screens.",
+    "UI flicker/lag: dashboard appears to alternate between default fallback prices and attempted live updates, causing visible blinking/lag (likely repeated refetch/re-render loop or unstable API fetch results/failed updates).",
+    "UI flicker/lag persists continuously (not just during initial load): dashboard appears to constantly blink between default fallback prices and attempted live updates; occurs while logged in (Google/Internet Identity) and with no repeated errors visible in the browser console—suggests a silent refetch/render loop or unstable query invalidation causing frequent state swaps."
+  ],
+  "isFixRequest": true,
+  "gameProjectType": "none",
+  "projectName": "Investment Portfolio Dashboard",
+  "clarification_mode": "pro",
+  "clarification_rounds": 0,
+  "requiresBackendChanges": false,
+  "requiresFrontendChanges": true
+}
